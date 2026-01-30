@@ -61,23 +61,30 @@ export function Hero() {
             </div>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            style={{ translateZ: "30px" }}
-          >
-            <h2 className="text-primary font-space tracking-[0.2em] uppercase text-sm md:text-base mb-4">
-              Data Scientist & AI Engineer
-            </h2>
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold font-space tracking-tighter mb-6">
-              ANKAN <span className="text-glow text-primary">GHOSH</span>
-            </h1>
-            <p className="max-w-2xl text-muted-foreground text-lg md:text-xl mb-10 leading-relaxed">
-              Transforming complex datasets into actionable insights. Expert in Machine Learning, 
-              Algorithmic Problem Solving, and end-to-end AI solutions.
-            </p>
-          </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              style={{ translateZ: "30px" }}
+            >
+              <h2 className="text-primary font-space tracking-[0.3em] uppercase text-xs md:text-sm mb-4 opacity-80 flex items-center justify-center gap-3">
+                <span className="w-8 h-[1px] bg-primary/30" />
+                Data Scientist & AI Engineer
+                <span className="w-8 h-[1px] bg-primary/30" />
+              </h2>
+              <h1 
+                className="text-6xl md:text-8xl lg:text-9xl font-bold font-space tracking-tighter mb-6 glitch-hover cursor-default"
+                data-text="ANKAN GHOSH"
+              >
+                ANKAN <span className="text-glow text-primary">GHOSH</span>
+              </h1>
+              <p className="max-w-2xl text-muted-foreground text-lg md:text-xl mb-10 leading-relaxed font-light">
+                <span className="text-primary/50 font-mono mr-2">&gt;</span>
+                Transforming complex datasets into actionable insights. Expert in Machine Learning, 
+                Algorithmic Problem Solving, and end-to-end AI solutions.
+              </p>
+            </motion.div>
+
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}

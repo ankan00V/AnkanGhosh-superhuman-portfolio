@@ -28,29 +28,31 @@ export function Navbar() {
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "py-4" : "py-6"}`}>
       <div className="container mx-auto px-6 md:px-12">
-        <div className={`glass px-6 py-3 rounded-full flex items-center justify-between transition-all duration-300 ${isScrolled ? "bg-background/40" : "bg-transparent border-transparent shadow-none"}`}>
-          <a href="#" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center group-hover:bg-primary/40 transition-colors">
-              <Cpu className="w-5 h-5 text-primary" />
-            </div>
-            <span className="font-space font-bold text-lg tracking-tighter">
-              ANKAN<span className="text-primary">.</span>DEV
-            </span>
-          </a>
+          <div className={`glass px-6 py-3 rounded-full flex items-center justify-between transition-all duration-300 ${isScrolled ? "bg-background/40 border-primary/30 neon-shadow" : "bg-transparent border-transparent shadow-none"}`}>
+            <a href="#" className="flex items-center gap-2 group">
+              <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center group-hover:bg-primary/40 transition-colors border border-primary/30">
+                <Cpu className="w-5 h-5 text-primary" />
+              </div>
+              <span className="font-space font-bold text-lg tracking-tighter glitch-hover" data-text="ANKAN.DEV">
+                ANKAN<span className="text-primary">.</span>DEV
+              </span>
+            </a>
 
-          {/* Desktop Nav */}
-          <ul className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <li key={link.name}>
-                <a
-                  href={link.href}
-                  className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors font-space uppercase tracking-widest"
-                >
-                  {link.name}
-                </a>
-              </li>
-            ))}
-          </ul>
+            {/* Desktop Nav */}
+            <ul className="hidden md:flex items-center gap-8">
+              {navLinks.map((link) => (
+                <li key={link.name}>
+                  <a
+                    href={link.href}
+                    className="text-[10px] font-bold text-muted-foreground hover:text-primary transition-all font-space uppercase tracking-[0.2em] relative group"
+                  >
+                    <span className="relative z-10">{link.name}</span>
+                    <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-primary transition-all group-hover:w-full shadow-[0_0_8px_var(--primary)]" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+
 
           <button
             className="md:hidden text-foreground p-2"
