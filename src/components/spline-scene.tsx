@@ -8,7 +8,7 @@ export function SplineScene() {
         frameBorder="0" 
         width="100%" 
         height="100%"
-        className="rounded-3xl mix-blend-screen"
+          className="rounded-3xl mix-blend-multiply brightness-[1.8] contrast-[1.5] saturate-[1.2]"
         style={{
           maskImage: 'radial-gradient(circle at center, black 50%, transparent 95%)',
           WebkitMaskImage: 'radial-gradient(circle at center, black 50%, transparent 95%)',
