@@ -2,12 +2,18 @@
 
 import { Canvas, useFrame } from "@react-three/fiber"
 import { Points, PointMaterial } from "@react-three/drei"
-import * as random from "maath/random/dist/maath-random.esm"
+import * as random from "maath/random"
 import { useState, useRef, Suspense } from "react"
 
 function StarField(props: any) {
   const ref = useRef<any>()
-  const [sphere] = useState(() => random.inSphere(new Float32Array(5000), { radius: 1.5 }))
+  const [sphere] = useState(() => {
+    const data = new Float32Array(5000 * 3)
+    for (let i = 0; i < 5000 * 3; i++) {
+      data[i] = (Math.random() - 0.5) * 3
+    }
+    return data
+  })
 
   useFrame((state, delta) => {
     ref.current.rotation.x -= delta / 10
