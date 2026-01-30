@@ -126,12 +126,11 @@ export function Hero() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 1 }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce cursor-pointer z-20"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2 cursor-pointer z-20"
         onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
       >
-        <div className="w-6 h-10 border-2 border-primary/30 rounded-full flex justify-center p-1">
-          <div className="w-1.5 h-1.5 bg-primary rounded-full" />
-        </div>
+        <span className="text-[10px] font-mono tracking-[0.3em] text-primary uppercase opacity-50">Scroll</span>
+        <div className="w-[1px] h-12 bg-gradient-to-b from-primary to-transparent opacity-50" />
       </motion.div>
     </section>
   )
