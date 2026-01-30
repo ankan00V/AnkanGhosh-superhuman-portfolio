@@ -59,12 +59,14 @@ export function Hero() {
               <div className="absolute -inset-1 bg-gradient-to-r from-primary to-accent rounded-full blur opacity-25 animate-pulse" />
                 <div className="relative glass-card !rounded-full p-1 overflow-hidden">
                    <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-secondary/50 flex items-center justify-center overflow-hidden relative">
-                     <Image 
-                       src="https://media.licdn.com/dms/image/v2/D5603AQEgsBwL21VRlw/profile-displayphoto-scale_400_400/B56ZgJOw0_HYAk-/0/1752501523203?e=1771459200&v=beta&t=zKhgbgyRKj5BRlooLiLGR6wJLlHD-En_w3tq1z86EdY"
-                       alt="Ankan Ghosh"
-                       fill
-                       className="object-cover transition-transform duration-500 hover:scale-110"
-                     />
+                       <Image 
+                         src="https://media.licdn.com/dms/image/v2/D5603AQEgsBwL21VRlw/profile-displayphoto-scale_400_400/B56ZgJOw0_HYAk-/0/1752501523203?e=1771459200&v=beta&t=zKhgbgyRKj5BRlooLiLGR6wJLlHD-En_w3tq1z86EdY"
+                         alt="Ankan Ghosh"
+                         fill
+                         priority
+                         sizes="(max-width: 768px) 96px, 128px"
+                         className="object-cover transition-transform duration-500 hover:scale-110"
+                       />
                    </div>
                 </div>
             </motion.div>

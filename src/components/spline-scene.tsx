@@ -8,7 +8,11 @@ export function SplineScene() {
         frameBorder="0" 
         width="100%" 
         height="100%"
-        className="rounded-3xl"
+        className="rounded-3xl mix-blend-screen"
+        style={{
+          maskImage: 'radial-gradient(circle at center, black 50%, transparent 95%)',
+          WebkitMaskImage: 'radial-gradient(circle at center, black 50%, transparent 95%)',
+        }}
         title="Spline 3D Robot"
       />
       <div className="absolute bottom-4 right-4 text-[10px] font-mono text-white/20 uppercase tracking-widest pointer-events-none">
