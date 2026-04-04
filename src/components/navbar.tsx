@@ -1,14 +1,15 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Menu, X, Cpu, User, Code, Briefcase, GraduationCap, Mail } from "lucide-react"
+import { Menu, X, Cpu, User, Sparkles, Briefcase, FolderKanban, Award, GraduationCap, Mail } from "lucide-react"
 
 const navLinks = [
   { name: "About", href: "#about", icon: User },
-  { name: "Skills", href: "#skills", icon: Cpu },
+  { name: "Skills", href: "#skills", icon: Sparkles },
   { name: "Experience", href: "#experience", icon: Briefcase },
-  { name: "Projects", href: "#projects", icon: Code },
+  { name: "Projects", href: "#projects", icon: FolderKanban },
+  { name: "Certs", href: "#certifications", icon: Award },
   { name: "Education", href: "#education", icon: GraduationCap },
   { name: "Contact", href: "#contact", icon: Mail },
 ]
@@ -18,70 +19,74 @@ export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50)
-    }
+    const handleScroll = () => setIsScrolled(window.scrollY > 24)
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "py-4" : "py-6"}`}>
+    <nav className="fixed top-0 left-0 right-0 z-50 py-4 md:py-5">
       <div className="container mx-auto px-6 md:px-12">
-          <div className={`glass px-6 py-3 rounded-full flex items-center justify-between transition-all duration-300 ${isScrolled ? "bg-background/40 border-primary/30 neon-shadow" : "bg-transparent border-transparent shadow-none"}`}>
-            <a href="#" className="flex items-center gap-2 group">
-              <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center group-hover:bg-primary/40 transition-colors border border-primary/30">
+        <div
+          className={`rounded-2xl border px-4 md:px-6 py-3 transition-all duration-300 ${
+            isScrolled
+              ? "bg-[#090b18]/80 border-primary/35 backdrop-blur-xl shadow-[0_0_25px_rgba(0,246,255,0.18)]"
+              : "bg-[#090b18]/50 border-white/10 backdrop-blur-md"
+          }`}
+        >
+          <div className="flex items-center justify-between gap-4">
+            <a href="#" className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-primary/15 border border-primary/40 flex items-center justify-center">
                 <Cpu className="w-5 h-5 text-primary" />
               </div>
-              <span className="font-space font-bold text-lg tracking-tighter glitch-hover" data-text="ANKAN.DEV">
-                ANKAN<span className="text-primary">.</span>DEV
-              </span>
+              <div>
+                <p className="font-space font-bold text-sm md:text-base leading-none tracking-tight">ANKAN GHOSH</p>
+                <p className="text-[10px] uppercase tracking-[0.24em] text-primary/80 mt-1">Data + AI Engineer</p>
+              </div>
             </a>
 
-            {/* Desktop Nav */}
-            <ul className="hidden md:flex items-center gap-8">
+            <ul className="hidden lg:flex items-center gap-6">
               {navLinks.map((link) => (
                 <li key={link.name}>
                   <a
                     href={link.href}
-                    className="text-[10px] font-bold text-muted-foreground hover:text-primary transition-all font-space uppercase tracking-[0.2em] relative group"
+                    className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground hover:text-primary transition-colors"
                   >
-                    <span className="relative z-10">{link.name}</span>
-                    <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-primary transition-all group-hover:w-full shadow-[0_0_8px_var(--primary)]" />
+                    {link.name}
                   </a>
                 </li>
               ))}
             </ul>
 
-
-          <button
-            className="md:hidden text-foreground p-2"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? <X /> : <Menu />}
-          </button>
+            <button
+              className="lg:hidden p-2"
+              onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+              aria-label="Toggle menu"
+            >
+              {isMobileMenuOpen ? <X /> : <Menu />}
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="absolute top-full left-0 right-0 mx-6 mt-4 md:hidden"
+            exit={{ opacity: 0, y: -12 }}
+            className="lg:hidden px-6 md:px-12 mt-3"
           >
-            <div className="glass rounded-3xl p-6 flex flex-col gap-4">
+            <div className="rounded-2xl border border-primary/25 bg-[#0b0f20]/90 backdrop-blur-xl p-4 flex flex-col gap-1">
               {navLinks.map((link) => (
                 <a
                   key={link.name}
                   href={link.href}
-                  className="flex items-center gap-4 text-lg font-space font-medium hover:text-primary transition-colors py-2"
+                  className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-primary/10 transition-colors"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  <link.icon className="w-5 h-5 text-primary" />
-                  {link.name}
+                  <link.icon className="w-4 h-4 text-primary" />
+                  <span className="font-space text-sm uppercase tracking-[0.14em]">{link.name}</span>
                 </a>
               ))}
             </div>

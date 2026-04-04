@@ -1,153 +1,203 @@
 "use client"
 
-import { Canvas, useFrame } from "@react-three/fiber"
-import { Points, PointMaterial, Grid } from "@react-three/drei"
-import { useState, useRef, Suspense, useEffect } from "react"
-import * as THREE from "three"
-import { motion, useSpring, useMotionValue } from "framer-motion"
+import dynamic from "next/dynamic"
+import { useEffect, useRef, useState } from "react"
 
-function StarField() {
-  const ref = useRef<THREE.Points>(null!)
-  
-  const [sphere] = useState(() => {
-    const data = new Float32Array(6000 * 3)
-    for (let i = 0; i < 6000 * 3; i++) {
-      data[i] = (Math.random() - 0.5) * 4
-    }
-    return data
-  })
+const Spline = dynamic(() => import("@splinetool/react-spline"), {
+  ssr: false,
+})
 
-  useFrame((state, delta) => {
-    if (!ref.current) return
-    // Rotation
-    ref.current.rotation.x -= delta / 15
-    ref.current.rotation.y -= delta / 20
+const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)
 
-    // Parallax
-    const { x, y } = state.mouse
-    ref.current.position.x = THREE.MathUtils.lerp(ref.current.position.x, x * 0.15, 0.05)
-    ref.current.position.y = THREE.MathUtils.lerp(ref.current.position.y, y * 0.15, 0.05)
-  })
-
-  return (
-    <group rotation={[0, 0, Math.PI / 4]}>
-      <Points ref={ref} positions={sphere} stride={3} frustumCulled>
-        <PointMaterial
-          transparent
-          color="#5eead4"
-          size={0.005}
-          sizeAttenuation={true}
-          depthWrite={false}
-          blending={THREE.AdditiveBlending}
-        />
-      </Points>
-    </group>
-  )
+type CyberBackgroundProps = {
+  freezeMotion?: boolean
 }
 
-function CyberGrid() {
-  const gridRef = useRef<THREE.Group>(null!)
-
-  useFrame((state) => {
-    if (!gridRef.current) return
-    const { x, y } = state.mouse
-    // Subtle tilt based on mouse
-    gridRef.current.rotation.x = THREE.MathUtils.lerp(gridRef.current.rotation.x, -Math.PI / 3 + y * 0.1, 0.05)
-    gridRef.current.rotation.y = THREE.MathUtils.lerp(gridRef.current.rotation.y, x * 0.1, 0.05)
-  })
-
-  return (
-    <group ref={gridRef} position={[0, -1, -2]} rotation={[-Math.PI / 3, 0, 0]}>
-      <Grid
-        args={[20, 20]}
-        sectionSize={1}
-        sectionColor="#00f7ff"
-        sectionThickness={1.5}
-        cellSize={0.5}
-        cellColor="#00f7ff"
-        cellThickness={0.8}
-        infiniteGrid
-        fadeDistance={25}
-        fadeStrength={5}
-      />
-    </group>
-  )
-}
-
-function GlowingOrbs() {
-  const ref = useRef<THREE.Group>(null!)
-
-  useFrame((state) => {
-    if (!ref.current) return
-    const { x, y } = state.mouse
-    ref.current.position.x = THREE.MathUtils.lerp(ref.current.position.x, x * 0.5, 0.02)
-    ref.current.position.y = THREE.MathUtils.lerp(ref.current.position.y, y * 0.5, 0.02)
-  })
-
-  return (
-    <group ref={ref}>
-      <mesh position={[-3, 2, -6]}>
-        <sphereGeometry args={[4, 32, 32]} />
-        <meshBasicMaterial color="#7c3aed" transparent opacity={0.08} />
-      </mesh>
-      <mesh position={[3, -2, -6]}>
-        <sphereGeometry args={[5, 32, 32]} />
-        <meshBasicMaterial color="#00f7ff" transparent opacity={0.08} />
-      </mesh>
-    </group>
-  )
-}
-
-export function CyberBackground() {
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
-  
-  const springConfig = { damping: 25, stiffness: 150 }
-  const smoothX = useSpring(mouseX, springConfig)
-  const smoothY = useSpring(mouseY, springConfig)
+  export function CyberBackground({ freezeMotion = false }: CyberBackgroundProps) {
+  const splineLayerRef = useRef<HTMLDivElement | null>(null)
+  const glowLayerRef = useRef<HTMLDivElement | null>(null)
+  const frozenProgressRef = useRef(0)
+  const targetProgressRef = useRef(0)
+  const renderedProgressRef = useRef(0)
+  const scrollRangeRef = useRef(1)
+  const [isMotionReduced, setIsMotionReduced] = useState(false)
+  const [isCompactPerformanceMode, setIsCompactPerformanceMode] = useState(false)
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX.set(e.clientX)
-      mouseY.set(e.clientY)
+    if (typeof window === "undefined") {
+      return
     }
-    window.addEventListener("mousemove", handleMouseMove)
-    return () => window.removeEventListener("mousemove", handleMouseMove)
-  }, [mouseX, mouseY])
+
+    const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)")
+
+    const updatePerformanceFlags = () => {
+      const isSmallViewport = window.innerWidth <= 900
+      const lowCpu = typeof navigator.hardwareConcurrency === "number" && navigator.hardwareConcurrency <= 4
+      const maybeLowMemory =
+        "deviceMemory" in navigator && typeof (navigator as Navigator & { deviceMemory?: number }).deviceMemory === "number"
+          ? ((navigator as Navigator & { deviceMemory?: number }).deviceMemory ?? 8) <= 4
+          : false
+
+      setIsMotionReduced(reducedMotionQuery.matches)
+      setIsCompactPerformanceMode(isSmallViewport && (lowCpu || maybeLowMemory))
+    }
+
+    updatePerformanceFlags()
+
+    if (typeof reducedMotionQuery.addEventListener === "function") {
+      reducedMotionQuery.addEventListener("change", updatePerformanceFlags)
+    } else {
+      reducedMotionQuery.addListener(updatePerformanceFlags)
+    }
+
+    window.addEventListener("resize", updatePerformanceFlags, { passive: true })
+
+    return () => {
+      if (typeof reducedMotionQuery.removeEventListener === "function") {
+        reducedMotionQuery.removeEventListener("change", updatePerformanceFlags)
+      } else {
+        reducedMotionQuery.removeListener(updatePerformanceFlags)
+      }
+
+      window.removeEventListener("resize", updatePerformanceFlags)
+    }
+  }, [])
+
+  const shouldRenderSpline = !isCompactPerformanceMode
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return
+    }
+
+    let raf = 0
+    let resizeObserver: ResizeObserver | null = null
+
+    const recalculateScrollRange = () => {
+      const body = document.body
+      const doc = document.documentElement
+      const totalHeight = Math.max(body.scrollHeight, doc.scrollHeight, body.offsetHeight, doc.offsetHeight)
+      const viewportHeight = window.visualViewport?.height ?? window.innerHeight
+      scrollRangeRef.current = Math.max(totalHeight - viewportHeight, 1)
+    }
+
+    const readNormalizedScrollProgress = () => {
+      const scrollTop = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0
+      return clamp(scrollTop / scrollRangeRef.current, 0, 1)
+    }
+
+    const renderFrame = () => {
+      const targetProgress = freezeMotion || isMotionReduced ? frozenProgressRef.current : targetProgressRef.current
+      const progressDelta = Math.abs(targetProgress - renderedProgressRef.current)
+      const lerpFactor = isCompactPerformanceMode ? 0.08 : 0.12
+      const nextProgress =
+        freezeMotion || isMotionReduced
+          ? targetProgress
+          : renderedProgressRef.current + (targetProgress - renderedProgressRef.current) * lerpFactor
+
+      renderedProgressRef.current = clamp(progressDelta < 0.001 ? targetProgress : nextProgress, 0, 1)
+
+      const smoothProgress = 1 - Math.pow(1 - renderedProgressRef.current, 3)
+
+      if (splineLayerRef.current) {
+        const translateFactor = isCompactPerformanceMode ? -6 : -10
+        const scaleFactor = isCompactPerformanceMode ? 0.045 : 0.08
+        const translateY = smoothProgress * translateFactor
+        const scale = 1 + smoothProgress * scaleFactor
+
+        splineLayerRef.current.style.transform = `translate3d(0, ${translateY}dvh, 0) scale(${scale})`
+      }
+
+      if (glowLayerRef.current) {
+        const baseOpacity = isCompactPerformanceMode ? 0.68 : 0.78
+        const opacityRange = isCompactPerformanceMode ? 0.11 : 0.16
+        const opacity = baseOpacity + smoothProgress * opacityRange
+        glowLayerRef.current.style.opacity = `${opacity}`
+      }
+
+      const remainingDelta = Math.abs(targetProgressRef.current - renderedProgressRef.current)
+      if (remainingDelta > 0.001 && !freezeMotion && !isMotionReduced) {
+        raf = window.requestAnimationFrame(renderFrame)
+      } else {
+        raf = 0
+      }
+    }
+
+    const syncTargetProgress = () => {
+      recalculateScrollRange()
+      targetProgressRef.current = readNormalizedScrollProgress()
+
+      if (!freezeMotion && !isMotionReduced) {
+        frozenProgressRef.current = targetProgressRef.current
+      }
+
+      if (raf === 0) {
+        raf = window.requestAnimationFrame(renderFrame)
+      }
+    }
+
+    recalculateScrollRange()
+    targetProgressRef.current = readNormalizedScrollProgress()
+    renderedProgressRef.current = targetProgressRef.current
+    frozenProgressRef.current = targetProgressRef.current
+
+    if (splineLayerRef.current) {
+      splineLayerRef.current.style.transform = "translate3d(0, 0dvh, 0) scale(1)"
+    }
+
+    syncTargetProgress()
+
+    if (typeof ResizeObserver !== "undefined") {
+      resizeObserver = new ResizeObserver(syncTargetProgress)
+      resizeObserver.observe(document.body)
+      resizeObserver.observe(document.documentElement)
+    }
+
+    window.addEventListener("scroll", syncTargetProgress, { passive: true })
+    window.addEventListener("resize", syncTargetProgress, { passive: true })
+    window.addEventListener("orientationchange", syncTargetProgress, { passive: true })
+    window.visualViewport?.addEventListener("resize", syncTargetProgress, { passive: true })
+
+    return () => {
+      if (raf !== 0) {
+        window.cancelAnimationFrame(raf)
+      }
+
+      resizeObserver?.disconnect()
+      window.visualViewport?.removeEventListener("resize", syncTargetProgress)
+      window.removeEventListener("scroll", syncTargetProgress)
+      window.removeEventListener("resize", syncTargetProgress)
+      window.removeEventListener("orientationchange", syncTargetProgress)
+    }
+  }, [freezeMotion, isCompactPerformanceMode, isMotionReduced])
 
   return (
-    <div className="fixed inset-0 -z-10 bg-[#020617] overflow-hidden scanlines">
-      {/* Dynamic Cursor Spotlight */}
-      <motion.div 
-        className="absolute pointer-events-none z-0 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px]"
-        style={{
-          left: smoothX,
-          top: smoothY,
-          translateX: "-50%",
-          translateY: "-50%",
-        }}
+    <div className="fixed inset-0 z-0 overflow-hidden bg-[#02050f]">
+        <div ref={splineLayerRef} className="cyber-spline-layer absolute inset-0 pointer-events-none will-change-transform">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(34,211,238,0.2)_0%,transparent_36%),radial-gradient(circle_at_82%_24%,rgba(139,92,246,0.2)_0%,transparent_40%),radial-gradient(circle_at_52%_66%,rgba(34,211,238,0.12)_0%,transparent_54%)]" />
+            {shouldRenderSpline ? (
+              <Spline
+                scene="https://prod.spline.design/GrNuJPZYhOlAXoL3/scene.splinecode"
+                className="h-full w-full opacity-95"
+                style={{
+                  maskImage: "radial-gradient(circle at center, black 24%, transparent 100%)",
+                  WebkitMaskImage: "radial-gradient(circle at center, black 24%, transparent 100%)",
+                }}
+              />
+            ) : null}
+        </div>
+
+
+      <div
+        ref={glowLayerRef}
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_20%,rgba(34,211,238,0.2)_0%,transparent_42%),radial-gradient(circle_at_82%_18%,rgba(139,92,246,0.2)_0%,transparent_44%),radial-gradient(circle_at_50%_62%,rgba(56,189,248,0.08)_0%,transparent_52%)] transition-opacity duration-150"
       />
-
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/5 rounded-full blur-[150px] animate-pulse" />
-        <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-accent/5 rounded-full blur-[150px] animate-pulse [animation-delay:3s]" />
-      </div>
-
-      <div className="absolute inset-0 opacity-40">
-        <Canvas camera={{ position: [0, 0, 1.5], fov: 60 }}>
-          <Suspense fallback={null}>
-            <StarField />
-            <CyberGrid />
-            <GlowingOrbs />
-          </Suspense>
-        </Canvas>
-      </div>
-
-      {/* Static Cyber Overlay */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#00f7ff05_1px,transparent_1px),linear-gradient(to_bottom,#00f7ff05_1px,transparent_1px)] bg-[size:100px_100px] pointer-events-none" />
-      
-      {/* Darkness Vignette */}
-      <div className="absolute inset-0 bg-radial-gradient from-transparent via-[#020617]/50 to-[#020617] pointer-events-none" />
+      <div className="pointer-events-none absolute -left-24 top-12 h-72 w-72 animate-pulse rounded-full bg-cyan-300/12 blur-3xl motion-reduce:animate-none" />
+      <div className="pointer-events-none absolute -right-20 bottom-12 h-80 w-80 animate-pulse rounded-full bg-violet-400/12 blur-3xl [animation-delay:900ms] motion-reduce:animate-none" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(115deg,rgba(34,211,238,0.06)_0%,transparent_30%,transparent_70%,rgba(139,92,246,0.08)_100%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,transparent_36%,rgba(2,5,15,0.15)_74%,rgba(2,5,15,0.28)_100%)]" />
+      <div className="pointer-events-none absolute inset-0 z-10 bg-[radial-gradient(circle_at_6%_8%,rgba(2,5,15,0.24)_0%,rgba(2,5,15,0.14)_24%,transparent_46%),radial-gradient(circle_at_94%_8%,rgba(2,5,15,0.24)_0%,rgba(2,5,15,0.14)_24%,transparent_46%),radial-gradient(circle_at_6%_94%,rgba(2,5,15,0.3)_0%,rgba(2,5,15,0.18)_26%,transparent_48%),radial-gradient(circle_at_94%_94%,rgba(2,5,15,0.6)_0%,rgba(2,5,15,0.5)_16%,rgba(2,5,15,0.34)_28%,rgba(2,5,15,0.16)_42%,transparent_60%),linear-gradient(180deg,rgba(2,5,15,0.14)_0%,transparent_16%,transparent_82%,rgba(2,5,15,0.28)_100%),linear-gradient(90deg,rgba(2,5,15,0.14)_0%,transparent_12%,transparent_86%,rgba(2,5,15,0.24)_100%)]" />
+      <div className="pointer-events-none absolute bottom-0 right-0 z-20 h-24 w-44 bg-[radial-gradient(130%_130%_at_100%_100%,rgba(2,5,15,0.98)_42%,rgba(2,5,15,0.92)_62%,rgba(2,5,15,0.32)_100%)] sm:h-28 sm:w-52" />
     </div>
   )
 }

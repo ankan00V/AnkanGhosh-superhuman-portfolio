@@ -2,106 +2,131 @@
 
 import { motion } from "framer-motion"
 import { Section } from "./section"
-import { User, Cpu, Database, Cloud, Terminal, Palette, Award } from "lucide-react"
+import { User, BrainCircuit, Database, Cloud, Wrench, BarChart3 } from "lucide-react"
 
-const skills = [
+const skillGroups = [
   {
-    category: "Programming & Core",
-    icon: Terminal,
-    items: ["Python", "C++", "SQL", "DSA", "FastAPI", "Flask"],
+    category: "Languages & Core",
+    icon: Wrench,
+    items: ["Python", "SQL", "C++", "Data Structures", "Algorithms"],
   },
   {
-    category: "Data & ML",
+    category: "ML / AI Stack",
+    icon: BrainCircuit,
+    items: ["Scikit-learn", "TensorFlow", "PyTorch", "OpenCV", "Transformers", "GenAI"],
+  },
+  {
+    category: "Data Systems",
     icon: Database,
-    items: ["Scikit-learn", "TensorFlow", "PyTorch", "PySpark", "Hadoop", "XGBoost", "MLOps"],
+    items: ["Pandas", "NumPy", "SciPy", "PostgreSQL", "MySQL", "MongoDB", "Redis"],
   },
   {
-    category: "AI & Emerging",
-    icon: Cpu,
-    items: ["LLMs", "RAG", "Vision Transformers", "CNNs", "Diffusion Models", "Vector DBs"],
-  },
-  {
-    category: "Cloud & Deployment",
+    category: "Backend & Deployment",
     icon: Cloud,
-    items: ["AWS", "GCP", "Azure", "Snowflake", "Docker", "Kubernetes", "Kafka"],
+    items: ["FastAPI", "Flask", "Django", "Docker", "Kubernetes", "Celery", "CI/CD"],
   },
   {
-    category: "Visualization",
-    icon: Palette,
-    items: ["Tableau", "Power BI", "Matplotlib", "Seaborn", "Plotly"],
+    category: "Analytics & BI",
+    icon: BarChart3,
+    items: ["Power BI", "Tableau", "Matplotlib", "Seaborn", "Jupyter", "Google Colab"],
   },
+]
+
+const strengths = [
+  "Problem-Solving",
+  "Analytical Thinking",
+  "Team Collaboration",
+  "Adaptability",
+  "Communication",
 ]
 
 export function AboutAndSkills() {
   return (
     <>
-      <Section id="about" title="About Me" icon={User}>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <Section id="about" title="Profile" icon={User}>
+        <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-8">
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="space-y-6"
+            className="rounded-3xl border border-white/15 bg-[#0a1123]/70 backdrop-blur-xl p-7 md:p-9"
           >
-            <p className="text-xl text-muted-foreground leading-relaxed">
-              Results-driven with a solid foundation in data analysis, machine learning, and algorithmic problem solving. 
-              Hands‐on experience developing end‐to‐end solutions—from data ingestion and feature engineering in Python 
-              to performant C++ implementations of core algorithms.
+            <p className="text-lg md:text-xl text-slate-200/90 leading-relaxed">
+              Results-driven Data Scientist and AI Engineer with strong foundations in machine learning, data analysis,
+              and algorithmic problem solving. I build end-to-end systems from ingestion and feature engineering to
+              secure API deployment and interactive dashboards that enable strategic decisions.
             </p>
-            <p className="text-xl text-muted-foreground leading-relaxed">
-              Passionate about transforming complex datasets into clear, actionable insights and dashboards that drive 
-              strategic decision‐making. I thrive in cross‐functional teams and am eager to contribute to innovative, 
-              data‐driven projects.
+            <p className="mt-5 text-slate-300/80 leading-relaxed">
+              I have delivered measurable outcomes in enterprise and product settings, including data quality improvement,
+              process automation, and high-reliability architecture backed by automated tests and cloud-native workflows.
             </p>
-            <div className="flex items-center gap-6 pt-4">
-               <div className="flex flex-col">
-                 <span className="text-primary font-space text-3xl font-bold">15%</span>
-                 <span className="text-xs uppercase tracking-widest text-muted-foreground">Accuracy Improvement</span>
-               </div>
-               <div className="flex flex-col">
-                 <span className="text-primary font-space text-3xl font-bold">20%</span>
-                 <span className="text-xs uppercase tracking-widest text-muted-foreground">Efficiency Boost</span>
-               </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-7">
+              <div className="rounded-2xl border border-primary/30 bg-primary/10 p-4">
+                <p className="text-2xl font-space font-bold text-primary">15%</p>
+                <p className="text-[11px] uppercase tracking-[0.2em] text-slate-300/70 mt-1">Data Accuracy Up</p>
+              </div>
+              <div className="rounded-2xl border border-primary/30 bg-primary/10 p-4">
+                <p className="text-2xl font-space font-bold text-primary">20%</p>
+                <p className="text-[11px] uppercase tracking-[0.2em] text-slate-300/70 mt-1">Efficiency Gain</p>
+              </div>
+              <div className="rounded-2xl border border-primary/30 bg-primary/10 p-4">
+                <p className="text-2xl font-space font-bold text-primary">2x</p>
+                <p className="text-[11px] uppercase tracking-[0.2em] text-slate-300/70 mt-1">Faster Insights</p>
+              </div>
+              <div className="rounded-2xl border border-primary/30 bg-primary/10 p-4">
+                <p className="text-2xl font-space font-bold text-primary">30%</p>
+                <p className="text-[11px] uppercase tracking-[0.2em] text-slate-300/70 mt-1">Less Manual Effort</p>
+              </div>
             </div>
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="glass-card flex items-center justify-center p-12 min-h-[300px] border-primary/20"
+            transition={{ delay: 0.08 }}
+            className="rounded-3xl border border-accent/30 bg-[#120f26]/60 backdrop-blur-xl p-7"
           >
-             <div className="text-center">
-                <Award className="w-16 h-16 text-primary mx-auto mb-4 animate-bounce" />
-                <h3 className="text-2xl font-space font-bold mb-2">Oracle Certified</h3>
-                <p className="text-muted-foreground">Data Science & GenAI Professional</p>
-             </div>
+            <h3 className="font-space text-2xl font-bold mb-4">Core Strengths</h3>
+            <div className="flex flex-wrap gap-2">
+              {strengths.map((strength) => (
+                <span key={strength} className="px-3 py-1.5 rounded-full text-xs uppercase tracking-[0.14em] border border-accent/35 bg-accent/10">
+                  {strength}
+                </span>
+              ))}
+            </div>
+            <p className="mt-6 text-sm text-slate-300/80 leading-relaxed">
+              Comfortable across Linux, Windows, and macOS with practical experience collaborating in cross-functional,
+              high-ownership environments.
+            </p>
           </motion.div>
         </div>
       </Section>
 
-      <Section id="skills" title="Tech Stack" icon={Cpu}>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {skills.map((skill, index) => (
+      <Section id="skills" title="Tech Stack" icon={BrainCircuit}>
+        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
+          {skillGroups.map((group, index) => (
             <motion.div
-              key={skill.category}
-              initial={{ opacity: 0, y: 20 }}
+              key={group.category}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="glass-card group"
+              transition={{ delay: index * 0.06 }}
+              className="rounded-2xl border border-white/15 bg-[#0a1022]/70 p-6 backdrop-blur-lg hover:border-primary/40 transition-colors"
             >
-              <div className="flex items-center gap-4 mb-6">
-                <div className="p-3 rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                  <skill.icon className="w-6 h-6" />
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-10 h-10 rounded-xl bg-primary/15 border border-primary/30 flex items-center justify-center">
+                  <group.icon className="w-5 h-5 text-primary" />
                 </div>
-                <h3 className="font-space font-bold text-lg">{skill.category}</h3>
+                <h3 className="font-space font-bold text-lg">{group.category}</h3>
               </div>
+
               <div className="flex flex-wrap gap-2">
-                {skill.items.map((item) => (
+                {group.items.map((item) => (
                   <span
                     key={item}
-                    className="px-3 py-1 rounded-md bg-secondary/30 text-xs font-medium border border-white/5 group-hover:border-primary/30 transition-colors"
+                    className="px-3 py-1.5 rounded-md text-xs uppercase tracking-[0.12em] border border-white/10 bg-[#111831]/75 text-slate-200/90"
                   >
                     {item}
                   </span>

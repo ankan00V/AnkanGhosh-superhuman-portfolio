@@ -46,15 +46,32 @@
   --border: oklch(1 0 0 / 15%);
 }
 
-@layer base {
-  * {
-    @apply border-border;
+  @layer base {
+    * {
+      @apply border-border;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 1rem;
+      min-height: 100%;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      @apply bg-background text-foreground selection:bg-primary/30;
+      min-height: 100%;
+      overflow-x: hidden;
+      overscroll-behavior-y: none;
+      -webkit-overflow-scrolling: touch;
+    }
   }
-  body {
-    @apply bg-background text-foreground selection:bg-primary/30;
-    overflow-x: hidden;
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
   }
-}
 
 @utility glass {
   background-color: rgba(255, 255, 255, 0.05);
@@ -180,4 +197,15 @@
 /* Hide Next.js error overlay portal */
 nextjs-portal {
   display: none !important;
+}
+
+/* Hide Spline badge/watermark UI when present */
+.cyber-spline-layer :is(a, button, div)[aria-label*="Spline" i],
+.cyber-spline-layer :is(a, button, div)[title*="Spline" i],
+.cyber-spline-layer a[href*="spline" i],
+.cyber-spline-layer [class*="spline-watermark" i],
+.cyber-spline-layer [id*="spline-watermark" i] {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
 }
